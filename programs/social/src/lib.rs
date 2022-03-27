@@ -110,7 +110,7 @@ pub struct VotePost<'info> {
     )]
     post_vote: Account<'info, PostVote>,
     #[account(mut)]
-    post: Account<'info, UserPost>,
+    user_post: Account<'info, UserPost>,
     #[account(mut)]
     authority: Signer<'info>,
     /// CHECK: We dont neeed to worry about this
