@@ -12,7 +12,12 @@ pub mod social {
         Ok(())
     }
 
-    pub fn create_user_month(ctx: Context<InitializeUserMonth>, umvars: UMVars) -> Result<()> {
+    pub fn create_user_month(
+        ctx: Context<InitializeUserMonth>, 
+        _yearstr:String,
+        _monthstr:String,
+        umvars: UMVars
+    ) -> Result<()> {
         ctx.accounts.user_month.year=umvars.year;
         ctx.accounts.user_month.month=umvars.month;
         Ok(())
@@ -40,14 +45,15 @@ pub struct InitializeUser<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8)]
+#[instruction(yearstr: String, monthstr: String)]
 pub struct InitializeUserMonth<'info> {
     #[account(
         init,
         seeds = [
             b"user_month".as_ref(),
-            authority.key().as_ref()
-            //vars.yearstr.as_ref()
+            authority.key().as_ref(),
+            yearstr.as_ref(),
+            monthstr.as_ref()
             ],
         bump,
         payer=authority,

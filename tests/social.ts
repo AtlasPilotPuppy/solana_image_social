@@ -60,12 +60,15 @@ describe("social", () => {
       [
         Buffer.from("user_month"),
         authority.toBuffer(),
-        //Buffer.from("2022")
+        Buffer.from(date.getFullYear().toString()),
+        Buffer.from(date.getMonth().toString()),
       ],
       program.programId
     );
     const tx = await program.methods
     .createUserMonth(
+      date.getFullYear().toString(),
+      date.getMonth().toString(),
       {
         year: 2022,
         month: 3,
