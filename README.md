@@ -10,3 +10,8 @@ So far the solana program has the data layer.
 ## Use of PDA's
 We rely heavily in the usage of Program Derived Accounts to essentually build 
 Hash Maps to allow us to find information rapidly.
+
+# Running the program
+- Install anchor [following these instructions.](https://project-serum.github.io/anchor/getting-started/installation.html)
+- in this folder run `yarn` to install dependencies
+- Run tests using `anchor test`
