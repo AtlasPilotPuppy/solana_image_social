@@ -16,10 +16,9 @@ pub mod social {
         ctx: Context<InitializeUserMonth>, 
         _yearstr:String,
         _monthstr:String,
-        umvars: UMVars
+        user_month: UserMonth
     ) -> Result<()> {
-        ctx.accounts.user_month.year=umvars.year;
-        ctx.accounts.user_month.month=umvars.month;
+        ctx.accounts.user_month.set_inner(user_month);
         Ok(())
     }
 
@@ -64,13 +63,6 @@ pub struct InitializeUserMonth<'info> {
     authority: Signer<'info>,
     /// CHECK: We dont neeed to worry about this
     system_program: AccountInfo<'info>
-}
-
-#[account]
-pub struct UMVars {
-    month: u8,
-    year: u16,
-    yearstr: String
 }
 
 #[account]

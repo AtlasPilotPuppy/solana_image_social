@@ -70,9 +70,9 @@ describe("social", () => {
       date.getFullYear().toString(),
       date.getMonth().toString(),
       {
+        authority: authority,
         year: 2022,
         month: 3,
-        yearstr: "2022"
       }
       )
     .accounts({
