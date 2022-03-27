@@ -60,6 +60,7 @@ describe("social", () => {
       [
         Buffer.from("user_month"),
         authority.toBuffer(),
+        Buffer.from(String(date.getFullYear()))
       ],
       program.programId
     );

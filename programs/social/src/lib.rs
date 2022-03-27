@@ -19,7 +19,7 @@ pub mod social {
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8)]
+#[instruction(bump: u8, year: u16, month: u8)]
 pub struct InitializeUser<'info> {
     #[account(
         init,
@@ -40,7 +40,11 @@ pub struct InitializeUser<'info> {
 pub struct InitializeUserMonth<'info> {
     #[account(
         init,
-        seeds = [b"user_month".as_ref(),authority.key().as_ref()],
+        seeds = [
+            b"user_month".as_ref(),
+            authority.key().as_ref(),
+            year.to_string().to_bytes().as_ref()
+            ],
         bump,
         payer=authority,
         space=128
