@@ -60,12 +60,17 @@ describe("social", () => {
       [
         Buffer.from("user_month"),
         authority.toBuffer(),
-        Buffer.from(String(date.getFullYear()))
+        Buffer.from("2022")
       ],
       program.programId
     );
     const tx = await program.methods
-    .createUserMonth(date.getFullYear(), date.getMonth())
+    .createUserMonth(
+      {
+        year: 2022,
+        month: 3,
+      }
+      )
     .accounts({
       userMonth:userMonth,
       authority:authority,
@@ -77,6 +82,7 @@ describe("social", () => {
     const um = await program.account.userMonth.fetch(userMonth);
     console.log("Fetched userMonth")
     console.log(um)
+    console.log(date.getFullYear())
   })
 
 });

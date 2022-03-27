@@ -12,18 +12,22 @@ pub mod social {
         Ok(())
     }
 
-    pub fn create_user_month(ctx: Context<InitializeUserMonth>, year: u16, month: u8) -> Result<()> {
+    pub fn create_user_month(ctx: Context<InitializeUserMonth>, vars: UMVars) -> Result<()> {
+        ctx.accounts.user_month.year=vars.year;
+        ctx.accounts.user_month.month=vars.month;
         Ok(())
     }
 
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8, year: u16, month: u8)]
+#[instruction(bump: u8, year:u16, month: u8)]
 pub struct InitializeUser<'info> {
     #[account(
         init,
-        seeds = [b"user".as_ref(), authority.key().as_ref()],
+        seeds = [b"user".as_ref(), 
+        authority.key().as_ref()
+        ],
         bump,
         payer=authority,
         space = User::LEN
@@ -36,14 +40,14 @@ pub struct InitializeUser<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8)]
+#[instruction(bump: u8, year: u16)]
 pub struct InitializeUserMonth<'info> {
     #[account(
         init,
         seeds = [
             b"user_month".as_ref(),
             authority.key().as_ref(),
-            year.to_string().to_bytes().as_ref()
+            year.to_string().as_ref()
             ],
         bump,
         payer=authority,
@@ -54,6 +58,12 @@ pub struct InitializeUserMonth<'info> {
     authority: Signer<'info>,
     /// CHECK: We dont neeed to worry about this
     system_program: AccountInfo<'info>
+}
+
+#[account]
+pub struct UMVars {
+    month: u8,
+    year: u16
 }
 
 #[account]
