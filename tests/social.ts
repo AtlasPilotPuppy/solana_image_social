@@ -70,10 +70,11 @@ describe("social", () => {
       date.getFullYear().toString(),
       date.getMonth().toString(),
       {
-        authority: authority,
-        year: 2022,
-        month: 3,
-      }
+        userAccount: user,
+      year: 2022,
+      month: 3,
+      posts: []
+    }
       )
     .accounts({
       userMonth:userMonth,
@@ -89,4 +90,38 @@ describe("social", () => {
     console.log(date.getFullYear())
   })
 
+  it("Can create user posts", async () => {
+    const authority = program.provider.wallet.publicKey;
+    const [user, _bump] = await PublicKey.findProgramAddress(
+      [Buffer.from("user"),authority.toBuffer()],
+      program.programId
+    );
+    console.log("RECOVERED: "+ user)
+    const date = new Date();
+    const [userMonth, bump] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from("user_month"),
+        authority.toBuffer(),
+        Buffer.from(date.getFullYear().toString()),
+        Buffer.from(date.getMonth().toString()),
+      ],
+      program.programId
+    );
+    const post = anchor.web3.Keypair.generate();
+    const tx = await program.methods.createPost(
+      {
+        authority: authority,
+        userMonth: userMonth,
+        timestamp: date.getTime()/1000,
+        cid: "",
+        title: "Test Title"
+      }
+    ).accounts({
+      post: post.publicKey,
+      authority:authority,
+      userMonth: userMonth, 
+      //user:user,
+      systemProgram: anchor.web3.SystemProgram.programId
+    }).signers([post]).rpc();
+  })
 });
