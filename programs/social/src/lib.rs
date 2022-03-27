@@ -44,10 +44,9 @@ pub mod social {
         ctx.accounts.post_vote.timestamp = timestamp;
         ctx.accounts.post_vote.upvote = upvote;
         if upvote {
-            ctx.accounts.post.upvotes += 1;
-        } 
-        else {
-            ctx.accounts.post.downvotes += 1;
+            ctx.accounts.user_post.upvotes += 1;
+        } else {
+            ctx.accounts.user_post.downvotes += 1;
         }
         Ok(())
     }
@@ -102,7 +101,7 @@ pub struct VotePost<'info> {
         seeds=[
             b"vote_post".as_ref(),
             authority.key().as_ref(),
-            post.key().as_ref()
+            user_post.key().as_ref()
             ],
         bump,
         payer=authority,
@@ -172,7 +171,7 @@ pub struct UserPost {
     cid: String,        // 4*59
     title: String,      //4*50
     upvotes: u32,
-    downvotes: u32
+    downvotes: u32,
 }
 
 #[account]
@@ -180,7 +179,7 @@ pub struct PostVote {
     authority: Pubkey,
     user_post: Pubkey,
     timestamp: u32,
-    upvote: bool
+    upvote: bool,
 }
 
 impl UserPost {
@@ -196,5 +195,5 @@ pub enum ErrorCodes {
     #[msg("Post title needs to be less than 50 characters")]
     PostTitleTooLong,
     #[msg("User Key and User Account do not match.")]
-    MismatchedUserAccount
+    MismatchedUserAccount,
 }
