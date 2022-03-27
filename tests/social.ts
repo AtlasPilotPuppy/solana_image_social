@@ -124,7 +124,7 @@ describe("social", () => {
         title: "Test Title"
       }
     ).accounts({
-      post: post.publicKey,
+      post: post,
       authority:authority,
       userMonth: userMonth, 
       //user:user,
