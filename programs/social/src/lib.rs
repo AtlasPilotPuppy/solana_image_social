@@ -105,7 +105,7 @@ pub struct VotePost<'info> {
             ],
         bump,
         payer=authority,
-        space=PostVote::LEN
+        space=PostVote::LEN + 60
     )]
     post_vote: Account<'info, PostVote>,
     #[account(mut)]
