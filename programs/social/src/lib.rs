@@ -181,6 +181,12 @@ pub struct PostVote {
     upvote: bool,
 }
 
+#[account]
+pub struct FriendList {
+    authority: Pubkey,
+    friends: Vec<Pubkey>
+}
+
 impl UserPost {
     const LEN: usize = 32 + 32 + 4 + (4 * 59) + (4 * 50) + 4 + 4;
 }
