@@ -107,28 +107,37 @@ describe("social", () => {
       ],
       program.programId
     );
+    const um = await program.account.userMonth.fetch(userMonth);
+    const postIndex = um.postCount+3;
     const [post, postBump] =  await PublicKey.findProgramAddress(
       [
         Buffer.from("user_post"),
         authority.toBuffer(),
-        userMonth.toBuffer()
+        userMonth.toBuffer(),
+        Buffer.from(postIndex.toString())
       ],
       program.programId
     );
+
     const tx = await program.methods.createPost(
+      postIndex.toString(),
       {
         authority: authority,
         userMonth: userMonth,
         timestamp: date.getTime()/1000,
-        cid: "",
+        cid: "CID",
         title: "Test Title"
       }
     ).accounts({
       post: post,
       authority:authority,
-      userMonth: userMonth, 
-      //user:user,
+      userMonth: userMonth,
       systemProgram: anchor.web3.SystemProgram.programId
     }).rpc();
+    const createdPost = await program.account.userPost.fetch(post);
+    const userMonthAccount = await program.account.userMonth.fetch(userMonth)
+    assert(createdPost.cid == "CID")
+    assert.equal(userMonthAccount.postCount, 1)
+    assert.deepNestedInclude(userMonthAccount.posts, post, "Post Not found in UserMOnth")
   })
 });
