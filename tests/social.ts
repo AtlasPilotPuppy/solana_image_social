@@ -60,7 +60,7 @@ describe("social", () => {
       [
         Buffer.from("user_month"),
         authority.toBuffer(),
-        Buffer.from("2022")
+        //Buffer.from("2022")
       ],
       program.programId
     );
@@ -69,7 +69,7 @@ describe("social", () => {
       {
         year: 2022,
         month: 3,
-        year_str: "2022"
+        yearstr: "2022"
       }
       )
     .accounts({
