@@ -21,7 +21,7 @@ pub mod social {
 }
 
 #[derive(Accounts)]
-#[instruction(bump: u8, year:u16, month: u8)]
+#[instruction(bump: u8, vars: UMVars)]
 pub struct InitializeUser<'info> {
     #[account(
         init,
@@ -63,7 +63,8 @@ pub struct InitializeUserMonth<'info> {
 #[account]
 pub struct UMVars {
     month: u8,
-    year: u16
+    year: u16,
+    year_str: String
 }
 
 #[account]

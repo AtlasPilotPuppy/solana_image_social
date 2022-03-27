@@ -69,6 +69,7 @@ describe("social", () => {
       {
         year: 2022,
         month: 3,
+        year_str: "2022"
       }
       )
     .accounts({
