@@ -148,5 +148,5 @@ pub enum ErrorCodes {
     #[msg("Post title needs to be less than 50 characters")]
     PostTitleTooLong,
     #[msg("User Key and User Account do not match.")]
-    MismatchedUserAccount(Pubkey, Pubkey),
+    MismatchedUserAccount
 }
