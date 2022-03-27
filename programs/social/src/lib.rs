@@ -79,6 +79,12 @@ pub struct InitializeUserMonth<'info> {
 pub struct CreatePost<'info> {
     #[account(
         init,
+        seeds = [
+            b"user_post".as_ref(),
+            authority.key().as_ref(),
+            user_month.key().as_ref()
+        ],
+        bump,
         payer=authority,
         space=UserPost::LEN
     )]

@@ -107,7 +107,14 @@ describe("social", () => {
       ],
       program.programId
     );
-    const post = anchor.web3.Keypair.generate();
+    const [post, postBump] =  await PublicKey.findProgramAddress(
+      [
+        Buffer.from("user_post"),
+        authority.toBuffer(),
+        userMonth.toBuffer()
+      ],
+      program.programId
+    );
     const tx = await program.methods.createPost(
       {
         authority: authority,
@@ -122,6 +129,6 @@ describe("social", () => {
       userMonth: userMonth, 
       //user:user,
       systemProgram: anchor.web3.SystemProgram.programId
-    }).signers([post]).rpc();
+    }).rpc();
   })
 });
