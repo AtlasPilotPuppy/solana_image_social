@@ -39,6 +39,18 @@ pub mod social {
         ctx.accounts.user_month.post_count += 1;
         Ok(())
     }
+
+    pub fn vote_post(ctx: Context<VotePost>, timestamp: u32, upvote: bool) -> Result<()> {
+        ctx.accounts.post_vote.timestamp = timestamp;
+        ctx.accounts.post_vote.upvote = upvote;
+        if upvote {
+            ctx.accounts.post.upvotes += 1;
+        } 
+        else {
+            ctx.accounts.post.downvotes += 1;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -70,13 +82,35 @@ pub struct InitializeUserMonth<'info> {
             authority.key().as_ref(),
             yearstr.as_ref(),
             monthstr.as_ref(),
-
             ],
         bump,
         payer=authority,
         space=128
     )]
     user_month: Account<'info, UserMonth>,
+    #[account(mut)]
+    authority: Signer<'info>,
+    /// CHECK: We dont neeed to worry about this
+    system_program: AccountInfo<'info>,
+}
+
+#[derive(Accounts)]
+// #[instruction(post: UserPost)]
+pub struct VotePost<'info> {
+    #[account(
+        init,
+        seeds=[
+            b"vote_post".as_ref(),
+            authority.key().as_ref(),
+            post.key().as_ref()
+            ],
+        bump,
+        payer=authority,
+        space=PostVote::LEN
+    )]
+    post_vote: Account<'info, PostVote>,
+    #[account(mut)]
+    post: Account<'info, UserPost>,
     #[account(mut)]
     authority: Signer<'info>,
     /// CHECK: We dont neeed to worry about this
@@ -122,7 +156,7 @@ pub struct UserMonth {
     authority: Pubkey,
     user_account: Pubkey,
     bump: u8,
-    // Store year and month so I can
+    // Store year and month so we can
     // Iterate on user posts for the year and month
     year: u16,
     month: u8,
@@ -137,10 +171,24 @@ pub struct UserPost {
     timestamp: u32,     //4
     cid: String,        // 4*59
     title: String,      //4*50
+    upvotes: u32,
+    downvotes: u32
+}
+
+#[account]
+pub struct PostVote {
+    authority: Pubkey,
+    user_post: Pubkey,
+    timestamp: u32,
+    upvote: bool
 }
 
 impl UserPost {
-    const LEN: usize = 32 + 32 + 4 + (4 * 59) + (4 * 50);
+    const LEN: usize = 32 + 32 + 4 + (4 * 59) + (4 * 50) + 4 + 4;
+}
+
+impl PostVote {
+    const LEN: usize = 32 + 32 + 4 + 1;
 }
 
 #[error_code]
