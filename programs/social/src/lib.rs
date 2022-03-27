@@ -40,10 +40,9 @@ pub mod social {
         Ok(())
     }
 
-    pub fn vote_post(ctx: Context<VotePost>, timestamp: u32, upvote: bool) -> Result<()> {
-        ctx.accounts.post_vote.timestamp = timestamp;
-        ctx.accounts.post_vote.upvote = upvote;
-        if upvote {
+    pub fn vote_post(ctx: Context<VotePost>, vote: PostVote) -> Result<()> {
+        ctx.accounts.post_vote.set_inner(vote);
+        if ctx.accounts.post_vote.upvote {
             ctx.accounts.user_post.upvotes += 1;
         } else {
             ctx.accounts.user_post.downvotes += 1;
@@ -105,7 +104,7 @@ pub struct VotePost<'info> {
             ],
         bump,
         payer=authority,
-        space=PostVote::LEN + 60
+        space=PostVote::LEN + 8
     )]
     post_vote: Account<'info, PostVote>,
     #[account(mut)]

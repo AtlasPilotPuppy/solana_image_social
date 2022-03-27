@@ -177,7 +177,10 @@ describe("social", () => {
     const [vote, voteBump] = await getVote(authority, post);
 
     const tx = await program.methods
-      .votePost(date.getTime() / 1000, true)
+      .votePost({
+        timestamp: date.getTime() / 1000, 
+        upvote: true
+      })
       .accounts({
         postVote: vote,
         userPost: post,
@@ -185,5 +188,8 @@ describe("social", () => {
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
+      const postAccount = await program.account.userPost.fetch(post);
+      assert.equal(postAccount.upvotes, 1);
+
   });
 });
