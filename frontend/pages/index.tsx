@@ -97,7 +97,7 @@ function Overview() {
       <Splash />
       <Footer />
     </OverviewWrapper>
-    </ProgramConnectionProvider>}
+    </ProgramConnectionProvider>
     </WalletModalProvider>
     </IPFSConnectionProvider>
     </WalletProvider>    
