@@ -101,6 +101,7 @@
     "export": "next export",
     "lint": "next lint",
     "lint-fix": "next lint --fix",
+    "set_program": "(brew list gsed > /dev/null || brew install gsed) && gsed -i -e  \"s/6yT4AFpityTwxz7AdVrSJTckGyPyrXL8MKuutmBbDTnj/$(solana-keygen pubkey ../target/deploy/social-keypair.json)/g\" src/constants.ts",
     "format": "prettier --write \"./**/*.{ts,tsx,js,jsx,json}\" --config ./.prettierrc"
   },
   "devDependencies": {
