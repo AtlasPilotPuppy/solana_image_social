@@ -4,76 +4,36 @@ import { getMultipleAccounts } from "@project-serum/anchor/dist/cjs/utils/rpc";
 import { assert } from "chai";
 import { Social } from "../target/types/social";
 const { PublicKey } = anchor.web3;
+import {getUser, getAuthority, getPost,getVote, getUserMonth, program} from "../cli/utils/prelude";
 
 describe("social", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.Provider.env());
-
-  const program = anchor.workspace.Social as Program<Social>;
-  const getAuthority = () => {
-    return program.provider.wallet;
-  };
-
-  const getUserMonth = async (
-    date: Date,
-    authority: anchor.web3.PublicKey
-  ): Promise<[anchor.web3.PublicKey, number]> => {
-    const [userMonth, bump] = await PublicKey.findProgramAddress(
-      [
-        Buffer.from("user_month"),
-        authority.toBuffer(),
-        Buffer.from(date.getFullYear().toString()),
-        Buffer.from(date.getMonth().toString()),
-      ],
-      program.programId
-    );
-    return [userMonth, bump];
-  };
-
-  const getUser = async (
-    authority: anchor.web3.PublicKey
-  ): Promise<[anchor.web3.PublicKey, number]> => {
-    const [user, bump] = await PublicKey.findProgramAddress(
-      [Buffer.from("user"), authority.toBuffer()],
-      program.programId
-    );
-    return [user, bump];
-  };
-
-  const getPost = async (
-    authority: anchor.web3.PublicKey,
-    userMonth: anchor.web3.PublicKey,
-    postIndex: number
-  ) => {
-    return await PublicKey.findProgramAddress(
-      [
-        Buffer.from("user_post"),
-        authority.toBuffer(),
-        userMonth.toBuffer(),
-        Buffer.from(postIndex.toString()),
-      ],
-      program.programId
-    );
-  };
-
-  const getVote = async (
-    authority: anchor.web3.PublicKey,
-    post: anchor.web3.PublicKey
-  ) => {
-    return await PublicKey.findProgramAddress(
-      [Buffer.from("vote_post"), authority.toBuffer(), post.toBuffer()],
-      program.programId
-    );
-  };
+  const otherUser = anchor.web3.Keypair.generate();
 
   it("Is initialized!", async () => {
-    // Add your test here.
     const authority = getAuthority().publicKey;
     const [user, bump] = await getUser(authority);
-    console.log("USERu " + user);
+    console.log("USER: " + user);
     console.log(`user bump: ${bump}`);
     const tx = await program.methods
-      .createUser("My User")
+      .createUser("#Boss")
+      .accounts({
+        user,
+        authority,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+    console.log("Your transaction signature", tx);
+  });
+
+  it("Create another user!", async () => {
+    const authority = getAuthority().publicKey;
+    const [user, bump] = await getUser(otherUser.publicKey);
+    console.log("Other USER: " + user);
+    console.log(`user bump: ${bump}`);
+    const tx = await program.methods
+      .createUser("#Follower")
       .accounts({
         user,
         authority,

@@ -54,8 +54,8 @@ pub mod social {
 
     pub fn follow_user(ctx: Context<FollowUser>) -> Result<()> {
         if !ctx.accounts.followed.blocked.contains(&ctx.accounts.followed.key()) {
-        ctx.accounts.my_follow.following.insert(ctx.accounts.followed.key());
-        ctx.accounts.followed.followers.insert(ctx.accounts.authority.key());
+        ctx.accounts.my_follow.following.push(ctx.accounts.followed.key());
+        ctx.accounts.followed.followers.push(ctx.accounts.authority.key());
         Ok(())
         } else {
             err!(ErrorCodes::UnableToFollow)
@@ -63,10 +63,12 @@ pub mod social {
     }
 
     pub fn remove_follower(ctx: Context<FollowUser>, block: bool) -> Result<()> {
-        ctx.accounts.my_follow.followers.remove(&ctx.accounts.followed.key());
-        ctx.accounts.followed.following.remove(&ctx.accounts.authority.key());
+        let follower_key = ctx.accounts.followed.key().clone();
+        let followed_by_key = ctx.accounts.authority.key().clone();
+        ctx.accounts.my_follow.followers.retain(|&x| x != follower_key);
+        ctx.accounts.followed.following.retain(|&x| x != followed_by_key);
         if block {
-            ctx.accounts.my_follow.blocked.insert(ctx.accounts.followed.key());
+            ctx.accounts.my_follow.blocked.push(ctx.accounts.followed.key());
         }
         Ok(())
     }
@@ -160,27 +162,6 @@ pub struct CreatePost<'info> {
     system_program: AccountInfo<'info>,
 }
 
-
-#[derive(Accounts)]
-pub struct InitFollowUser<'info> {
-    #[account(
-        init,
-        seeds = [
-            b"followers".as_ref(),
-            authority.key().as_ref()
-        ],
-        bump,
-        payer=authority,
-        space=UserPost::LEN
-    )]
-    my_follow: Account<'info, FollowList>,
-    #[account(mut)]
-    authority: Signer<'info>,
-    /// CHECK: We dont neeed to worry about this
-    system_program: AccountInfo<'info>,
-}
-
-
 #[derive(Accounts)]
 pub struct FollowUser<'info> {
     #[account(
@@ -246,9 +227,9 @@ pub struct PostVote {
 #[account]
 pub struct FollowList {
     authority: Pubkey,
-    followers: HashSet<Pubkey>,
-    following: HashSet<Pubkey>,
-    blocked: HashSet<Pubkey>,
+    followers: Vec<Pubkey>,
+    following: Vec<Pubkey>,
+    blocked: Vec<Pubkey>,
 }
 
 impl UserPost {
