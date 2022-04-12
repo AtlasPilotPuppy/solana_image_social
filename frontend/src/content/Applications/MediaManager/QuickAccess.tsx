@@ -125,7 +125,12 @@ function QuickAccess(programState: ProgramContextState) {
           <>
             <ImagesConnectionProvider>
             <UserDataContext.Consumer>
-              {value => <DisplayImageComponent images={value?.allImages} mobileOpen={true}/>}
+              {value => (<>
+              <DisplayImageComponent images={value?.allImages} mobileOpen={true}/>
+              
+              <DisplayImageComponent images={value?.userImages} mobileOpen={true}/>
+                </>
+              )}
             </UserDataContext.Consumer>
             </ImagesConnectionProvider>
             <Grid item xs={12} sm={6}>

@@ -10,7 +10,7 @@ interface WalletConnectedProps {
   children: ReactNode;
 }
 
-export const Authenticated: FC<WalletConnectedProps> = (props) => {
+export const WalletConnected: FC<WalletConnectedProps> = (props) => {
   const { children } = props;
   const wallet = useAnchorWallet();
   const router = useRouter();
@@ -49,6 +49,6 @@ export const Authenticated: FC<WalletConnectedProps> = (props) => {
   return <>{children}</>;
 };
 
-Authenticated.propTypes = {
+WalletConnected.propTypes = {
   children: PropTypes.node
 };

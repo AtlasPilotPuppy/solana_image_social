@@ -59,6 +59,7 @@ export interface ProgramContextState {
   programId: Address;
   wallet: AnchorWallet;
   connection: Connection;
+  displayName: "ProgramState"
 }
 
 export const ProgramConnectionContext = createContext<ProgramContextState>(

@@ -56,7 +56,6 @@ export const DisplayImageComponent: React.FC<ImageProps> = (props) =>  {
         {props.images.map((image) => <>{
 
         <Grid item xs={12} sm={6}>
-            <div>IMAGE</div>
         <Card>
           <CardActionAreaWrapper onClick={handleDrawerToggle}>
           {true ? (
@@ -93,7 +92,7 @@ export const DisplayImageComponent: React.FC<ImageProps> = (props) =>  {
                   fontWeight="bold"
                   variant="h6"
                 >
-                  FileTransfer.txt
+                  {image.title}
                 </Typography>
               </Box>
               <Typography component="span" variant="subtitle1">

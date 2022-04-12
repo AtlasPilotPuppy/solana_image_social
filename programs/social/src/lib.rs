@@ -1,6 +1,8 @@
+use std::collections::HashSet;
+
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("7p8C6xyHkFbexknPCjm1KbGmVgd1mbP4GRPKt7q9HLbn");
 
 #[program]
 pub mod social {
@@ -46,6 +48,25 @@ pub mod social {
             ctx.accounts.user_post.upvotes += 1;
         } else {
             ctx.accounts.user_post.downvotes += 1;
+        }
+        Ok(())
+    }
+
+    pub fn follow_user(ctx: Context<FollowUser>) -> Result<()> {
+        if !ctx.accounts.followed.blocked.contains(&ctx.accounts.followed.key()) {
+        ctx.accounts.my_follow.following.insert(ctx.accounts.followed.key());
+        ctx.accounts.followed.followers.insert(ctx.accounts.authority.key());
+        Ok(())
+        } else {
+            err!(ErrorCodes::UnableToFollow)
+        }
+    }
+
+    pub fn remove_follower(ctx: Context<FollowUser>, block: bool) -> Result<()> {
+        ctx.accounts.my_follow.followers.remove(&ctx.accounts.followed.key());
+        ctx.accounts.followed.following.remove(&ctx.accounts.authority.key());
+        if block {
+            ctx.accounts.my_follow.blocked.insert(ctx.accounts.followed.key());
         }
         Ok(())
     }
@@ -139,6 +160,46 @@ pub struct CreatePost<'info> {
     system_program: AccountInfo<'info>,
 }
 
+
+#[derive(Accounts)]
+pub struct InitFollowUser<'info> {
+    #[account(
+        init,
+        seeds = [
+            b"followers".as_ref(),
+            authority.key().as_ref()
+        ],
+        bump,
+        payer=authority,
+        space=UserPost::LEN
+    )]
+    my_follow: Account<'info, FollowList>,
+    #[account(mut)]
+    authority: Signer<'info>,
+    /// CHECK: We dont neeed to worry about this
+    system_program: AccountInfo<'info>,
+}
+
+
+#[derive(Accounts)]
+pub struct FollowUser<'info> {
+    #[account(
+        seeds = [
+            b"followers".as_ref(),
+            authority.key().as_ref()
+        ],
+        bump
+    )]
+    #[account(mut)]
+    my_follow: Account<'info, FollowList>,
+    #[account(mut)]
+    followed: Account<'info, FollowList>,
+    #[account(mut)]
+    authority: Signer<'info>,
+    /// CHECK: We dont neeed to worry about this
+    system_program: AccountInfo<'info>,
+}
+
 #[account]
 pub struct User {
     authority: Pubkey,
@@ -167,6 +228,7 @@ pub struct UserPost {
     authority: Pubkey,  //32
     user_month: Pubkey, //32
     timestamp: u32,     //4
+    main_cid: String,
     cid: String,        // 4*59
     title: String,      //4*50
     upvotes: u32,
@@ -182,9 +244,11 @@ pub struct PostVote {
 }
 
 #[account]
-pub struct FriendList {
+pub struct FollowList {
     authority: Pubkey,
-    friends: Vec<Pubkey>
+    followers: HashSet<Pubkey>,
+    following: HashSet<Pubkey>,
+    blocked: HashSet<Pubkey>,
 }
 
 impl UserPost {
@@ -201,4 +265,6 @@ pub enum ErrorCodes {
     PostTitleTooLong,
     #[msg("User Key and User Account do not match.")]
     MismatchedUserAccount,
+    #[msg("You are not allowed to follow the user.")]
+    UnableToFollow,
 }

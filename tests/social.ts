@@ -146,6 +146,7 @@ describe("social", () => {
         authority: authority,
         userMonth: userMonth,
         timestamp: date.getTime() / 1000,
+        mainCid: "main_cid",
         cid: "CID",
         title: "Test Title",
       })

@@ -20,7 +20,7 @@ import AllFolders from 'src/content/Applications/MediaManager/AllFolders';
 
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import ExtendedSidebarLayout from 'src/layouts/ExtendedSidebarLayout';
-import { Authenticated as WalletConnected } from 'src/components/Authenticated';
+import { WalletConnected } from 'src/components/WalletConnected';
 //
 import {
   ConnectionProvider,

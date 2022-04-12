@@ -18,7 +18,7 @@ import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import ImageTwoToneIcon from '@mui/icons-material/ImageTwoTone';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
 import TextSnippetTwoToneIcon from '@mui/icons-material/TextSnippetTwoTone';
-import { useDropzone } from 'react-dropzone';
+import { DropEvent, useDropzone } from 'react-dropzone';
 import CloudUploadTwoToneIcon from '@mui/icons-material/CloudUploadTwoTone';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
 import CheckTwoToneIcon from '@mui/icons-material/CheckTwoTone';
@@ -129,6 +129,7 @@ const BoxUpgrade = styled(Box)(
 function FileManagerSidebar() {
   const { t }: { t: any } = useTranslation();
 
+  const uploadAndMint = async(files: File[], event: DropEvent) => {}
   const data = {
     percentage: 68.45
   };
@@ -141,7 +142,9 @@ function FileManagerSidebar() {
     getRootProps,
     getInputProps
   } = useDropzone({
-    accept: 'image/jpeg, image/png'
+    accept: ['image/*', 'audio/*', 'video/*'],
+    maxFiles: 5,
+    onDropAccepted: uploadAndMint,
   });
 
   const files = acceptedFiles.map((file, index) => (
@@ -287,7 +290,7 @@ function FileManagerSidebar() {
             {t('Quick Upload')}
           </TypographyPrimary>
           <TypographySecondary variant="body1">
-            {t('Need a quick upload widgets? Search no more and use this one.')}
+            {t('Upload your media.')}
           </TypographySecondary>
 
           <BoxUploadWrapper {...getRootProps()}>
