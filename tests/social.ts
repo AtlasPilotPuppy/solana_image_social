@@ -10,6 +10,7 @@ describe("social", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.Provider.env());
   const otherUser = anchor.web3.Keypair.generate();
+  const provider = anchor.getProvider()
 
   it("Is initialized!", async () => {
     const authority = getAuthority().publicKey;
@@ -28,7 +29,11 @@ describe("social", () => {
   });
 
   it("Create another user!", async () => {
-    const authority = getAuthority().publicKey;
+    const authority = otherUser.publicKey;
+       await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(otherUser.publicKey, 10000000000),
+      "confirmed"
+    );
     const [user, bump] = await getUser(otherUser.publicKey);
     console.log("Other USER: " + user);
     console.log(`user bump: ${bump}`);
@@ -38,7 +43,7 @@ describe("social", () => {
         user,
         authority,
         systemProgram: anchor.web3.SystemProgram.programId,
-      })
+      }).signers([otherUser])
       .rpc();
     console.log("Your transaction signature", tx);
   });
