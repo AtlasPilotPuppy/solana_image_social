@@ -140,6 +140,13 @@ describe("social", () => {
       })
       .rpc();
     const createdPost = await program.account.userPost.fetch(post);
+    // Add post to topic
+    const topicTx = await program.methods.addTopicPost().accounts({
+      post: post,
+      topic: topicAct,
+    }).rpc();
+    const fetchedTopic = await program.account.topic.fetch(topicAct);
+    assert.equal(fetchedTopic.postCount, 1);
     const userMonthAccount = await program.account.userMonth.fetch(userMonth);
     assert(createdPost.cid == "CID");
     assert.equal(userMonthAccount.postCount, 1);

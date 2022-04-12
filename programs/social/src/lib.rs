@@ -77,7 +77,13 @@ pub mod social {
         ctx.accounts.topic.name = name;
         Ok(())
     }
-}
+
+    pub fn add_topic_post(ctx: Context<TopicPost>) -> Result<()> {
+        ctx.accounts.topic.posts.push(ctx.accounts.post.key());
+        ctx.accounts.topic.post_count += 1;
+        Ok(())
+    }
+ }
 
 #[derive(Accounts)]
 #[instruction(bump: u8)]
@@ -184,6 +190,14 @@ pub struct CreatePost<'info> {
     user_month: Account<'info, UserMonth>,
     /// CHECK: We dont neeed to worry about this
     system_program: AccountInfo<'info>,
+}
+
+#[derive(Accounts)]
+pub struct TopicPost<'info> {
+    #[account(mut)]
+    topic: Account<'info, Topic>,
+    #[account(mut)]
+    post: Account<'info, UserPost>,
 }
 
 #[derive(Accounts)]
