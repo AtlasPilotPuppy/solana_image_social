@@ -72,6 +72,11 @@ pub mod social {
         }
         Ok(())
     }
+
+    pub fn create_topic(ctx: Context<InitializeTopic>, name: String) -> Result<()> {
+        ctx.accounts.topic.name = name;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -87,6 +92,25 @@ pub struct InitializeUser<'info> {
         space = User::LEN
     )]
     user: Account<'info, User>,
+    #[account(mut)]
+    authority: Signer<'info>,
+    /// CHECK: we dont read from this
+    system_program: AccountInfo<'info>,
+}
+
+#[derive(Accounts)]
+#[instruction(name: String)]
+pub struct InitializeTopic<'info> {
+    #[account(
+        init,
+        seeds = [b"topic".as_ref(), 
+        name.as_ref(),
+        ],
+        bump,
+        payer=authority,
+        space = Topic::LEN
+    )]
+    topic: Account<'info, Topic>,
     #[account(mut)]
     authority: Signer<'info>,
     /// CHECK: we dont read from this
@@ -209,11 +233,13 @@ pub struct UserPost {
     authority: Pubkey,  //32
     user_month: Pubkey, //32
     timestamp: u32,     //4
-    main_cid: String,
+    upvotes: u32,       // 4
+    downvotes: u32,     //4
+    main_cid: String,   // 4* 59
     cid: String,        // 4*59
     title: String,      //4*50
-    upvotes: u32,
-    downvotes: u32,
+    tags: Vec<Pubkey>,  // 32 * 10
+    topics: Vec<Pubkey>, //32 * 10
 }
 
 #[account]
@@ -232,8 +258,20 @@ pub struct FollowList {
     blocked: Vec<Pubkey>,
 }
 
+#[account]
+pub struct Topic {
+    authority: Pubkey,
+    post_count: u32,
+    name: String,
+    posts: Vec<Pubkey>,
+}
+
+impl Topic { 
+    const LEN: usize = 32 + 4 + (4 * 50) + 32 * 200;
+}
+
 impl UserPost {
-    const LEN: usize = 32 + 32 + 4 + (4 * 59) + (4 * 50) + 4 + 4;
+    const LEN: usize = 32 + 32 + 4 + 4 + 4 + (4*59) * 2 + (4 * 50) + ((32* 10) * 2);
 }
 
 impl PostVote {

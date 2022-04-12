@@ -4,13 +4,14 @@ import { getMultipleAccounts } from "@project-serum/anchor/dist/cjs/utils/rpc";
 import { assert } from "chai";
 import { Social } from "../target/types/social";
 const { PublicKey } = anchor.web3;
-import {getUser, getAuthority, getPost,getVote, getUserMonth, program} from "../cli/utils/prelude";
+import {getUser, getAuthority, getPost,getVote, getUserMonth, program, getTopic} from "../cli/utils/prelude";
 
 describe("social", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.Provider.env());
   const otherUser = anchor.web3.Keypair.generate();
   const provider = anchor.getProvider()
+  const topicName = "Test_topic";
 
   it("Is initialized!", async () => {
     const authority = getAuthority().publicKey;
@@ -96,10 +97,24 @@ describe("social", () => {
     console.log(date.getFullYear());
   });
 
+  it("Can create topics", async () => {
+    const authority = getAuthority().publicKey;
+
+    const [topicAct, bump] = await getTopic(topicName);
+    const topic = await program.methods.createTopic(topicName).accounts({
+      topic: topicAct,
+      authority: authority,
+    }).rpc();
+
+      const topicAccount = await program.account.topic.fetch(topicAct);
+      assert.equal(topicAccount.name, topicName);
+
+  });
+
   it("Can create user posts", async () => {
     const authority = getAuthority().publicKey;
     const [user, _bump] = await getUser(authority);
-
+    const [topicAct, _] = await getTopic(topicName);
     const date = new Date();
     const [userMonth, bump] = await getUserMonth(date, authority);
     const um = await program.account.userMonth.fetch(userMonth);
@@ -114,6 +129,8 @@ describe("social", () => {
         mainCid: "main_cid",
         cid: "CID",
         title: "Test Title",
+        tags: [],
+        topics: [topicAct],
       })
       .accounts({
         post: post,
