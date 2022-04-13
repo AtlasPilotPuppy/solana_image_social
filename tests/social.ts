@@ -121,7 +121,7 @@ describe("social", () => {
       "TEST",
       "TEST CID",
       [topicAct],
-      [authority]
+      []
     )
 
     const createdPost = await program.account.userPost.fetch(post);
@@ -131,9 +131,9 @@ describe("social", () => {
       topic: topicAct,
     }).rpc();
     const fetchedTopic = await program.account.topic.fetch(topicAct);
-    assert.equal(fetchedTopic.postCount, 1);
+    assert.equal(fetchedTopic.postCount, 2);
     const userMonthAccount = await program.account.userMonth.fetch(userMonth);
-    assert(createdPost.cid == "CID");
+    assert(createdPost.cid == "TEST");
     assert.equal(userMonthAccount.postCount, 1);
     assert.deepNestedInclude(
       userMonthAccount.posts,

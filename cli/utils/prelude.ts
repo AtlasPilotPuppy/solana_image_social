@@ -1,5 +1,5 @@
 import * as anchor from "@project-serum/anchor";
-import { Address, Program } from "@project-serum/anchor";
+import { AccountNamespace, Address, Program } from "@project-serum/anchor";
 const { PublicKey } = anchor.web3;
 
 import { Social } from "../../target/types/social";
@@ -138,17 +138,6 @@ export const getAuthority = () => {
     return (new Date()).getTime() / 1000
   }
 
-  export const validateTopics = async (topics: Array<Address>) => {
-    const fetched = await program.account.topic.fetchMultiple(topics)
-    return await fetched.filter(value => value?.name)
-  }
-
-  export const validateTags = async (tags: Array<Address>) => {
-    const fetched = await program.account.user.fetchMultiple(tags)
-    const users = fetched.filter((tag)=> { tag?.handle })
-    console.log(`users: ${users}`)
-    return users
-  }
 
   export const topicAddPost = async (topic: Address, post: Address) => {
     const tx = await program.methods.addTopicPost().accounts({
@@ -170,11 +159,6 @@ export const getAuthority = () => {
         if (!userAccountExists(user)) {throw("User Account is not initialized. Please create an account first")};
         const userMonth = await getCreateUserMonth(authority, user);
         const postIndex = await getLastPostIndex(userMonth) + 1
-        console.error("CREATING TX -->>");
-        const validatedTopics = await validateTopics(topics);
-        console.error(`VVV ${validatedTopics[0].name}`)
-        const validatedTags = await validateTags(tags);
-        console.error("CREATING TX --");
         const [post, _postBump] = await getPost(authority, userMonth, postIndex);
         console.error("CREATING TX");
         const tx = await program.methods.createPost(postIndex.toString(), {
@@ -185,17 +169,19 @@ export const getAuthority = () => {
             cid: cid,
             title: title,
             content: content,
-            tags: validatedTags,
-            topics: validatedTopics,
+            tags: tags,
+            topics: topics,
         }).accounts({
             post: post,
             authority: authority,
             userMonth: userMonth,
             systemProgram: anchor.web3.SystemProgram.programId,
         }).rpc();
-        validatedTopics.forEach(async (topic) => {
-            await topicAddPost(topic as string, post)
-        });
+        console.error("CREATED TX");
+        for (const topic of topics) {
+            const tx = await topicAddPost(topic, post)
+            console.log(tx);
+        }
     return {post: post, tx: tx, userMonth: userMonth, postIndex: postIndex,}
 
   }
