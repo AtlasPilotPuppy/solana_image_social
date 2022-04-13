@@ -4,7 +4,7 @@ import { getMultipleAccounts } from "@project-serum/anchor/dist/cjs/utils/rpc";
 import { assert } from "chai";
 import { Social } from "../target/types/social";
 const { PublicKey } = anchor.web3;
-import {getUser, getAuthority, getPost,getVote, getUserMonth, program, getTopic} from "../cli/utils/prelude";
+import {getUser, getAuthority, getPost,getVote, getUserMonth, program, getTopic, createPost} from "../cli/utils/prelude";
 
 describe("social", () => {
   // Configure the client to use the local cluster.
@@ -113,33 +113,17 @@ describe("social", () => {
 
   it("Can create user posts", async () => {
     const authority = getAuthority().publicKey;
-    const [user, _bump] = await getUser(authority);
     const [topicAct, _] = await getTopic(topicName);
-    const date = new Date();
-    const [userMonth, bump] = await getUserMonth(date, authority);
-    const um = await program.account.userMonth.fetch(userMonth);
-    const postIndex = um.postCount + 1;
-    const [post, postBump] = await getPost(authority, userMonth, postIndex);
+    const {post, tx, userMonth} = await createPost(
+      authority,
+      "test",
+      "TEST POST",
+      "TEST",
+      "TEST CID",
+      [topicAct],
+      [authority]
+    )
 
-    const tx = await program.methods
-      .createPost(postIndex.toString(), {
-        authority: authority,
-        userMonth: userMonth,
-        timestamp: date.getTime() / 1000,
-        mainCid: "main_cid",
-        cid: "CID",
-        title: "Test Title",
-        content: "My posts content",
-        tags: [],
-        topics: [topicAct],
-      })
-      .accounts({
-        post: post,
-        authority: authority,
-        userMonth: userMonth,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .rpc();
     const createdPost = await program.account.userPost.fetch(post);
     // Add post to topic
     const topicTx = await program.methods.addTopicPost().accounts({

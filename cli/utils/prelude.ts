@@ -140,12 +140,14 @@ export const getAuthority = () => {
 
   export const validateTopics = async (topics: Array<Address>) => {
     const fetched = await program.account.topic.fetchMultiple(topics)
-    return fetched.filter((topic)=> { topic? true: false })
+    return await fetched.filter(value => value?.name)
   }
 
   export const validateTags = async (tags: Array<Address>) => {
     const fetched = await program.account.user.fetchMultiple(tags)
-    return fetched.filter((tag)=> { tag? true: false })
+    const users = fetched.filter((tag)=> { tag?.handle })
+    console.log(`users: ${users}`)
+    return users
   }
 
   export const topicAddPost = async (topic: Address, post: Address) => {
@@ -159,7 +161,6 @@ export const getAuthority = () => {
     authority: anchor.web3.PublicKey,
     title: string,
     content: string,
-    topic: Array<string>, 
     cid: string, 
     mainCid: String,
     topics: Array<Address> = [],
@@ -169,9 +170,13 @@ export const getAuthority = () => {
         if (!userAccountExists(user)) {throw("User Account is not initialized. Please create an account first")};
         const userMonth = await getCreateUserMonth(authority, user);
         const postIndex = await getLastPostIndex(userMonth) + 1
+        console.error("CREATING TX -->>");
         const validatedTopics = await validateTopics(topics);
+        console.error(`VVV ${validatedTopics[0].name}`)
         const validatedTags = await validateTags(tags);
+        console.error("CREATING TX --");
         const [post, _postBump] = await getPost(authority, userMonth, postIndex);
+        console.error("CREATING TX");
         const tx = await program.methods.createPost(postIndex.toString(), {
             authority: authority,
             userMonth: userMonth,
@@ -191,6 +196,6 @@ export const getAuthority = () => {
         validatedTopics.forEach(async (topic) => {
             await topicAddPost(topic as string, post)
         });
-
+    return {post: post, tx: tx, userMonth: userMonth, postIndex: postIndex,}
 
   }
