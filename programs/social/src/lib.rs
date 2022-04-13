@@ -257,10 +257,10 @@ pub struct UserPost {
 
 #[account]
 pub struct PostVote {
-    authority: Pubkey,
-    user_post: Pubkey,
-    timestamp: u32,
-    upvote: bool,
+    pub authority: Pubkey,
+    pub user_post: Pubkey,
+    pub timestamp: u32,
+    pub upvote: bool,
 }
 
 #[account]
