@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use anchor_lang::prelude::*;
 
 declare_id!("7p8C6xyHkFbexknPCjm1KbGmVgd1mbP4GRPKt7q9HLbn");
@@ -252,6 +250,7 @@ pub struct UserPost {
     main_cid: String,   // 4* 59
     cid: String,        // 4*59
     title: String,      //4*50
+    content: String,     // 4 * 144
     tags: Vec<Pubkey>,  // 32 * 10
     topics: Vec<Pubkey>, //32 * 10
 }
@@ -285,7 +284,7 @@ impl Topic {
 }
 
 impl UserPost {
-    const LEN: usize = 32 + 32 + 4 + 4 + 4 + (4*59) * 2 + (4 * 50) + ((32* 10) * 2);
+    const LEN: usize = 32 + 32 + 4 + 4 + 4 + (4*59) * 2 + (4 * 50) + (4 * 144) +  ((32* 10) * 2);
 }
 
 impl PostVote {

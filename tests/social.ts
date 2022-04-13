@@ -129,6 +129,7 @@ describe("social", () => {
         mainCid: "main_cid",
         cid: "CID",
         title: "Test Title",
+        content: "My posts content",
         tags: [],
         topics: [topicAct],
       })
