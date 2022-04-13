@@ -3,6 +3,9 @@ seeds = false
 [programs.localnet]
 social = "7p8C6xyHkFbexknPCjm1KbGmVgd1mbP4GRPKt7q9HLbn"
 
+[programs.devnet]
+social = "7p8C6xyHkFbexknPCjm1KbGmVgd1mbP4GRPKt7q9HLbn"
+
 [registry]
 url = "https://anchor.projectserum.com"
 

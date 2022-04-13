@@ -155,7 +155,7 @@ pub struct VotePost<'info> {
             ],
         bump,
         payer=authority,
-        space=PostVote::LEN + 8
+        space=PostVote::LEN
     )]
     post_vote: Account<'info, PostVote>,
     #[account(mut)]
@@ -288,7 +288,7 @@ impl UserPost {
 }
 
 impl PostVote {
-    const LEN: usize = 32 + 32 + 4 + 1;
+    const LEN: usize = 32 + 32 + 4 + 1 + 8;
 }
 
 #[error_code]
