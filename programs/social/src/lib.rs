@@ -241,18 +241,19 @@ pub struct UserMonth {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct UserPost {
-    authority: Pubkey,  //32
-    user_month: Pubkey, //32
-    timestamp: u32,     //4
-    upvotes: u32,       // 4
-    downvotes: u32,     //4
-    main_cid: String,   // 4* 59
-    cid: String,        // 4*59
-    title: String,      //4*50
-    content: String,     // 4 * 144
-    tags: Vec<Pubkey>,  // 32 * 10
-    topics: Vec<Pubkey>, //32 * 10
+    pub authority: Pubkey,  //32
+    pub user_month: Pubkey, //32
+    pub timestamp: u32,     //4
+    pub upvotes: u32,       // 4
+    pub downvotes: u32,     //4
+    pub main_cid: String,   // 4* 59
+    pub cid: String,        // 4*59
+    pub title: String,      //4*50
+    pub content: String,     // 4 * 144
+    pub tags: Vec<Pubkey>,  // 32 * 10
+    pub topics: Vec<Pubkey>, //32 * 10
 }
 
 #[account]
