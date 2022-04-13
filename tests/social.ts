@@ -114,6 +114,7 @@ describe("social", () => {
   it("Can create user posts", async () => {
     const authority = getAuthority().publicKey;
     const [topicAct, _] = await getTopic(topicName);
+    const [user, _bump] = await getUser(authority)
     const {post, tx, userMonth} = await createPost(
       authority,
       "test",
@@ -121,17 +122,13 @@ describe("social", () => {
       "TEST",
       "TEST CID",
       [topicAct],
-      []
+      [user]
     )
 
     const createdPost = await program.account.userPost.fetch(post);
     // Add post to topic
-    const topicTx = await program.methods.addTopicPost().accounts({
-      post: post,
-      topic: topicAct,
-    }).rpc();
     const fetchedTopic = await program.account.topic.fetch(topicAct);
-    assert.equal(fetchedTopic.postCount, 2);
+    assert.equal(fetchedTopic.postCount, 1);
     const userMonthAccount = await program.account.userMonth.fetch(userMonth);
     assert(createdPost.cid == "TEST");
     assert.equal(userMonthAccount.postCount, 1);
