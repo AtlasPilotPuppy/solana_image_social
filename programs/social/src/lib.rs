@@ -218,26 +218,28 @@ pub struct FollowUser<'info> {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct User {
-    authority: Pubkey,
-    bump: u8,
-    handle: String,
+    pub authority: Pubkey,
+    pub bump: u8,
+    pub handle: String,
 }
 
 impl User {
     const LEN: usize = 32 + 1 + (4 * 30);
 }
 #[account]
+#[derive(Debug)]
 pub struct UserMonth {
-    authority: Pubkey,
-    user_account: Pubkey,
-    bump: u8,
+    pub authority: Pubkey,
+    pub user_account: Pubkey,
+    pub bump: u8,
     // Store year and month so we can
     // Iterate on user posts for the year and month
-    year: u16,
-    month: u8,
-    post_count: u16,
-    posts: Vec<Pubkey>,
+    pub year: u16,
+    pub month: u8,
+    pub post_count: u16,
+    pub posts: Vec<Pubkey>,
 }
 
 #[account]
@@ -257,6 +259,7 @@ pub struct UserPost {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct PostVote {
     pub authority: Pubkey,
     pub user_post: Pubkey,
@@ -265,6 +268,7 @@ pub struct PostVote {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct FollowList {
     authority: Pubkey,
     followers: Vec<Pubkey>,
@@ -273,11 +277,12 @@ pub struct FollowList {
 }
 
 #[account]
+#[derive(Debug)]
 pub struct Topic {
-    authority: Pubkey,
-    post_count: u32,
-    name: String,
-    posts: Vec<Pubkey>,
+    pub authority: Pubkey,
+    pub post_count: u32,
+    pub name: String,
+    pub posts: Vec<Pubkey>,
 }
 
 impl Topic { 

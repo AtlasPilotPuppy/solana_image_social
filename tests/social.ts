@@ -12,6 +12,7 @@ describe("social", () => {
   const otherUser = anchor.web3.Keypair.generate();
   const provider = anchor.getProvider()
   const topicName = "Test_topic";
+  const accounts = new Map<string, string>();
 
   it("Is initialized!", async () => {
     const authority = getAuthority().publicKey;
@@ -26,6 +27,7 @@ describe("social", () => {
         systemProgram: anchor.web3.SystemProgram.programId,
       })
       .rpc();
+      accounts.set("user", user.toString());
     console.log("Your transaction signature", tx);
   });
 
@@ -46,6 +48,7 @@ describe("social", () => {
         systemProgram: anchor.web3.SystemProgram.programId,
       }).signers([otherUser])
       .rpc();
+      accounts.set("other_user", user.toString());
     console.log("Your transaction signature", tx);
   });
 
@@ -72,6 +75,7 @@ describe("social", () => {
     console.log("RECOVERED: " + user);
     const date = new Date();
     const [userMonth, bump] = await getUserMonth(date, authority);
+    accounts.set("userMonth", userMonth.toString());
     const tx = await program.methods
       .createUserMonth(
         date.getFullYear().toString(),
@@ -101,6 +105,7 @@ describe("social", () => {
     const authority = getAuthority().publicKey;
 
     const [topicAct, bump] = await getTopic(topicName);
+    accounts.set("topic", topicAct.toString());
     const topic = await program.methods.createTopic(topicName).accounts({
       topic: topicAct,
       authority: authority,
@@ -124,7 +129,7 @@ describe("social", () => {
       [topicAct],
       [user]
     )
-
+    accounts.set("post", post.toString());
     const createdPost = await program.account.userPost.fetch(post);
     // Add post to topic
     const fetchedTopic = await program.account.topic.fetch(topicAct);
@@ -147,7 +152,7 @@ describe("social", () => {
     const postIndex = um.postCount;
     const [post, postBump] = await getPost(authority, userMonth, postIndex);
     const [vote, voteBump] = await getVote(authority, post);
-
+    accounts.set("vote", vote.toString());
     const tx = await program.methods
       .votePost({
         timestamp: date.getTime() / 1000, 
@@ -162,6 +167,8 @@ describe("social", () => {
       .rpc();
       const postAccount = await program.account.userPost.fetch(post);
       assert.equal(postAccount.upvotes, 1);
-
+      accounts.forEach((v, k) => {
+        console.log(`${k}\t${v}`)
+      })
   });
 });
